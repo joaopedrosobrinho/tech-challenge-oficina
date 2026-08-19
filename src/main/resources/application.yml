@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: tech-challenge-oficina
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/oficina}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: ${SWAGGER_ENABLED:true}
+
+oficina:
+  security:
+    admin:
+      email: ${ADMIN_EMAIL:admin@oficina.com}
+      password: ${ADMIN_PASSWORD:admin123}
+    jwt:
+      secret: ${JWT_SECRET:b2ZpY2luYS10ZWNoLWNoYWxsZW5nZS1qd3Qtc2VjcmV0LWxvY2FsLTIwMjY=}
+      expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
