@@ -87,8 +87,8 @@ A aplicação aceita as seguintes variáveis de ambiente:
 | `SPRING_DATASOURCE_PASSWORD` | `postgres` | Senha do banco |
 | `JPA_DDL_AUTO` | `update` | Estratégia de schema do Hibernate |
 | `JPA_SHOW_SQL` | `false` | Exibição de SQL para diagnóstico local |
-| `ADMIN_EMAIL` | `admin@oficina.com` | E-mail do administrador inicial |
-| `ADMIN_PASSWORD` | `admin123` | Senha do administrador inicial |
+| `ADMIN_EMAIL` | definido no ambiente | E-mail do administrador inicial |
+| `ADMIN_PASSWORD` | definido no ambiente | Senha do administrador inicial |
 | `JWT_SECRET` | chave local de desenvolvimento | Chave Base64 de pelo menos 256 bits |
 | `JWT_EXPIRATION_MINUTES` | `60` | Validade do token em minutos |
 | `SWAGGER_ENABLED` | `true` | Habilita a documentação interativa |
@@ -157,10 +157,12 @@ Content-Type: application/json
 
 ```json
 {
-  "email": "admin@oficina.com",
-  "senha": "admin123"
+  "email": "usuario@exemplo.com",
+  "senha": "sua-senha"
 }
 ```
+
+O exemplo acima é apenas ilustrativo e não autentica. Use as credenciais definidas nas variáveis de ambiente `ADMIN_EMAIL` e `ADMIN_PASSWORD`.
 
 Copie o token retornado e envie nas operações administrativas:
 
