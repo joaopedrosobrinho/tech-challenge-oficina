@@ -39,3 +39,15 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Terraform e credenciais locais
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+infra/cluster/kubeconfig
+k8s/*-secret.yaml
+__pycache__/
+*.pyc

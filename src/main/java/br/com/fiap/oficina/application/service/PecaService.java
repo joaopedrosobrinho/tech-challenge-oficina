@@ -4,11 +4,11 @@ import br.com.fiap.oficina.application.dto.peca.MovimentacaoEstoqueRequest;
 import br.com.fiap.oficina.application.dto.peca.PecaRequest;
 import br.com.fiap.oficina.application.dto.peca.PecaResponse;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.application.mapper.PecaMapper;
 import br.com.fiap.oficina.domain.peca.Peca;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
-import br.com.fiap.oficina.infrastructure.repository.PecaRepository;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
+import br.com.fiap.oficina.application.port.out.PecaStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +17,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PecaService {
+public class PecaService implements br.com.fiap.oficina.application.port.out.ConsultaPecaPort {
 
-    private final PecaRepository pecaRepository;
-    private final OrdemServicoRepository ordemServicoRepository;
+    private final PecaStore pecaRepository;
+    private final OrdemServicoStore ordemServicoRepository;
 
     @Transactional
     public PecaResponse cadastrar(PecaRequest request) {

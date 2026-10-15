@@ -2,11 +2,11 @@ package br.com.fiap.oficina.application.service;
 
 import br.com.fiap.oficina.application.dto.veiculo.VeiculoRequest;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.domain.cliente.Cliente;
 import br.com.fiap.oficina.domain.veiculo.Veiculo;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
-import br.com.fiap.oficina.infrastructure.repository.VeiculoRepository;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
+import br.com.fiap.oficina.application.port.out.VeiculoStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,13 +27,13 @@ import static org.mockito.Mockito.when;
 class VeiculoServiceTest {
 
     @Mock
-    private VeiculoRepository veiculoRepository;
+    private VeiculoStore veiculoRepository;
 
     @Mock
     private ClienteService clienteService;
 
     @Mock
-    private OrdemServicoRepository ordemServicoRepository;
+    private OrdemServicoStore ordemServicoRepository;
 
     private VeiculoService service;
 

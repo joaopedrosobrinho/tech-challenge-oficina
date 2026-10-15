@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: oficina-load-test
+  namespace: oficina
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 360
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+        - name: k6
+          image: grafana/k6:1.3.0
+          args: [run, /scripts/load-test.js]
+          envFrom:
+            - secretRef: {name: oficina-secret}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: "1", memory: 256Mi}
+          volumeMounts:
+            - {name: script, mountPath: /scripts, readOnly: true}
+      volumes:
+        - name: script
+          configMap: {name: oficina-load-script}

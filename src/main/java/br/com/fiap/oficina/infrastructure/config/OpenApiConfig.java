@@ -24,13 +24,14 @@ public class OpenApiConfig {
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
-                ))
+                ).addSecuritySchemes("integracaoKey", new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER).name("X-Integration-Key")))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .info(new Info()
                 .title("API da Oficina Mecânica")
                 .description("API REST do Tech Challenge FIAP para gestão de clientes, "
                         + "veículos, serviços, peças, estoque e ordens de serviço.")
-                .version("1.0.0")
+                .version("2.0.0")
                 .contact(new Contact().name("Tech Challenge FIAP"))
                 .license(new License().name("Uso acadêmico")));
     }

@@ -3,6 +3,15 @@
 .vscode
 .codex
 .env
+.env.*
+infra
+k8s
+scripts
+docs
+.github
+tmp
+.curriculo*
+tech-challenge-oficina.md
 target
 *.log
 docker-compose*.yml

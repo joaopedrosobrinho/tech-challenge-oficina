@@ -4,8 +4,8 @@ import br.com.fiap.oficina.application.dto.autenticacao.LoginRequest;
 import br.com.fiap.oficina.application.dto.autenticacao.LoginResponse;
 import br.com.fiap.oficina.application.exception.CredenciaisInvalidasException;
 import br.com.fiap.oficina.domain.usuario.Usuario;
-import br.com.fiap.oficina.infrastructure.repository.UsuarioRepository;
-import br.com.fiap.oficina.infrastructure.security.JwtService;
+import br.com.fiap.oficina.application.port.out.UsuarioStore;
+import br.com.fiap.oficina.application.port.out.TokenPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,9 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class AutenticacaoService {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioStore usuarioRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final TokenPort jwtService;
 
     @Transactional(readOnly = true)
     public LoginResponse autenticar(LoginRequest request) {
@@ -32,7 +32,7 @@ public class AutenticacaoService {
                 ))
                 .orElseThrow(CredenciaisInvalidasException::new);
 
-        JwtService.TokenGerado token = jwtService.gerarToken(usuario);
+        TokenPort.TokenGerado token = jwtService.gerarToken(usuario);
 
         return new LoginResponse(
                 usuario.getEmail(),

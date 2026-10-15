@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: oficina
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: {app: postgres}
+  template:
+    metadata:
+      labels: {app: postgres}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: postgres
+          image: postgres:16.10
+          ports: [{containerPort: 5432}]
+          env:
+            - {name: POSTGRES_DB, value: oficina}
+            - {name: POSTGRES_USER, value: postgres}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          envFrom:
+            - secretRef: {name: postgres-secret}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: "1", memory: 512Mi}
+          readinessProbe:
+            exec: {command: [pg_isready, -U, postgres, -d, oficina]}
+            periodSeconds: 5
+          livenessProbe:
+            exec: {command: [pg_isready, -U, postgres, -d, oficina]}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: postgres-data}

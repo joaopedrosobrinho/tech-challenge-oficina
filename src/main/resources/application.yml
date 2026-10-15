@@ -11,9 +11,21 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
+      mail.smtp.connectiontimeout: 3000
+      mail.smtp.timeout: 3000
+      mail.smtp.writetimeout: 3000
   jpa:
+    open-in-view: false
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: ${JPA_DDL_AUTO:validate}
     show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
@@ -21,6 +33,7 @@ spring:
 
 server:
   port: 8080
+  shutdown: graceful
 
 springdoc:
   api-docs:
@@ -30,10 +43,31 @@ springdoc:
     enabled: ${SWAGGER_ENABLED:true}
 
 oficina:
+  notificacoes:
+    enabled: ${NOTIFICACOES_ENABLED:false}
+    remetente: ${SMTP_FROM:oficina@example.com}
   security:
+    integracao-token: ${INTEGRATION_TOKEN:}
     admin:
       email: ${ADMIN_EMAIL:admin@oficina.com}
       password: ${ADMIN_PASSWORD:admin123}
     jwt:
       secret: ${JWT_SECRET:b2ZpY2luYS10ZWNoLWNoYWxsZW5nZS1qd3Qtc2VjcmV0LWxvY2FsLTIwMjY=}
       expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db

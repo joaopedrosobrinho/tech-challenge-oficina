@@ -1,0 +1,106 @@
+name: Build, testes e deploy local
+
+on:
+  pull_request:
+  push:
+    branches: [main, tech-challenge-oficina-fase-2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fase2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar-e-publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16.10
+        env:
+          POSTGRES_DB: oficina_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: teste-ci-descartavel
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d oficina_test"
+          --health-interval 5s --health-timeout 5s --health-retries 15
+    env:
+      TEST_DATABASE_URL: jdbc:postgresql://localhost:5432/oficina_test
+      TEST_DATABASE_DRIVER: org.postgresql.Driver
+      TEST_DATABASE_USER: postgres
+      TEST_DATABASE_PASSWORD: teste-ci-descartavel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build e testes com PostgreSQL
+        run: mvn -B -ntp verify
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.3
+          terraform_wrapper: false
+      - name: Instalar Kind
+        run: |
+          curl -fsSLo kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/kind
+      - name: Validar Terraform
+        run: |
+          terraform fmt -check -recursive infra
+          terraform -chdir=infra/cluster init -input=false
+          terraform -chdir=infra/cluster validate
+          terraform -chdir=infra/database init -input=false
+          terraform -chdir=infra/database validate
+      - name: Construir imagem
+        run: docker build -t tech-challenge-oficina:${{ github.sha }} .
+      - name: Provisionar cluster e banco
+        run: |
+          terraform -chdir=infra/cluster apply -auto-approve -input=false
+          terraform -chdir=infra/database apply -auto-approve -input=false
+      - name: Publicar aplicação e manifestos
+        run: |
+          python scripts/configure-local.py
+          python scripts/deploy-local.py --image tech-challenge-oficina:${{ github.sha }}
+      - name: Validar APIs e notificações
+        run: |
+          kubectl --kubeconfig infra/cluster/kubeconfig -n oficina port-forward service/oficina 8080:8080 > /tmp/oficina-forward.log 2>&1 &
+          kubectl --kubeconfig infra/cluster/kubeconfig -n oficina port-forward service/mailpit 8025:8025 > /tmp/mailpit-forward.log 2>&1 &
+          python scripts/smoke-test.py --wait 90 --mailpit-url http://localhost:8025
+      - name: Demonstrar escala automática
+        run: python scripts/check-hpa.py
+      - name: Coletar diagnóstico do cluster
+        if: always()
+        run: |
+          if [ -f infra/cluster/kubeconfig ]; then
+            mkdir -p target/cluster
+            kubectl --kubeconfig infra/cluster/kubeconfig -n oficina get pods,svc,hpa > target/cluster/recursos.txt || true
+            kubectl --kubeconfig infra/cluster/kubeconfig -n oficina get events --sort-by=.lastTimestamp > target/cluster/eventos.txt || true
+            kubectl --kubeconfig infra/cluster/kubeconfig -n oficina logs deployment/oficina --all-containers --tail=200 > target/cluster/app.log || true
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verificacoes-fase2
+          path: |
+            target/surefire-reports/
+            target/site/jacoco/
+            target/cluster/
+      - name: Remover banco descartável
+        if: always()
+        run: |
+          if [ -f infra/database/terraform.tfstate ]; then
+            terraform -chdir=infra/database destroy -auto-approve -input=false
+          fi
+      - name: Remover cluster descartável
+        if: always()
+        run: |
+          if [ -f infra/cluster/terraform.tfstate ]; then
+            terraform -chdir=infra/cluster destroy -auto-approve -input=false
+          fi

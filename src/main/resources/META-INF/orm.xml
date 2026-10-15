@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm" version="3.1">
+  <entity class="br.com.fiap.oficina.domain.cliente.Cliente" access="FIELD" metadata-complete="true">
+    <table name="clientes" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="nome">
+        <column nullable="false" length="150" name="nome" />
+      </basic>
+      <basic name="cpfCnpj">
+        <column name="cpf_cnpj" nullable="false" length="14" />
+      </basic>
+      <basic name="telefone">
+        <column nullable="false" length="20" name="telefone" />
+      </basic>
+      <basic name="email">
+        <column nullable="false" length="150" name="email" />
+      </basic>
+      <one-to-many name="veiculos" mapped-by="cliente" target-entity="br.com.fiap.oficina.domain.veiculo.Veiculo" orphan-removal="true">
+        <cascade>
+          <cascade-all />
+        </cascade>
+      </one-to-many>
+      <one-to-many name="ordensServico" mapped-by="cliente" target-entity="br.com.fiap.oficina.domain.ordemservico.OrdemServico" />
+    </attributes>
+  </entity>
+  <entity class="br.com.fiap.oficina.domain.ordemservico.ItemPeca" access="FIELD" metadata-complete="true">
+    <table name="itens_peca" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="quantidade">
+        <column nullable="false" name="quantidade" />
+      </basic>
+      <basic name="valorUnitario">
+        <column name="valor_unitario" nullable="false" precision="12" scale="2" />
+      </basic>
+      <many-to-one name="ordemServico" fetch="LAZY" optional="false">
+        <join-column name="ordem_servico_id" nullable="false" />
+      </many-to-one>
+      <many-to-one name="peca" fetch="LAZY" optional="false">
+        <join-column name="peca_id" nullable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+  <entity class="br.com.fiap.oficina.domain.ordemservico.ItemServico" access="FIELD" metadata-complete="true">
+    <table name="itens_servico" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="quantidade">
+        <column nullable="false" name="quantidade" />
+      </basic>
+      <basic name="valorUnitario">
+        <column name="valor_unitario" nullable="false" precision="12" scale="2" />
+      </basic>
+      <many-to-one name="ordemServico" fetch="LAZY" optional="false">
+        <join-column name="ordem_servico_id" nullable="false" />
+      </many-to-one>
+      <many-to-one name="servico" fetch="LAZY" optional="false">
+        <join-column name="servico_id" nullable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+  <entity class="br.com.fiap.oficina.domain.ordemservico.OrdemServico" access="FIELD" metadata-complete="true">
+    <table name="ordens_servico" />
+    <pre-persist method-name="antesDeSalvar" />
+    <pre-update method-name="antesDeAtualizar" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="versaoOrcamento">
+        <column name="versao_orcamento" nullable="false" />
+      </basic>
+      <basic name="numeroOs">
+        <column name="numero_os" nullable="false" length="30" unique="true" />
+      </basic>
+      <basic name="statusAprovacaoOrcamento">
+        <column name="status_aprovacao_orcamento" length="30" />
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="dataAprovacaoOrcamento">
+        <column name="data_aprovacao_orcamento" />
+      </basic>
+      <basic name="observacaoAprovacaoOrcamento">
+        <column name="observacao_aprovacao_orcamento" length="500" />
+      </basic>
+      <basic name="status">
+        <column name="status" nullable="false" length="30" />
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="valorTotal">
+        <column name="valor_total" nullable="false" precision="12" scale="2" />
+      </basic>
+      <basic name="observacoes">
+        <column name="observacoes" length="1000" />
+      </basic>
+      <basic name="dataCriacao">
+        <column name="data_criacao" nullable="false" />
+      </basic>
+      <basic name="dataEnvioOrcamento">
+        <column name="data_envio_orcamento" />
+      </basic>
+      <basic name="dataAprovacao">
+        <column name="data_aprovacao" />
+      </basic>
+      <basic name="dataInicioExecucao">
+        <column name="data_inicio_execucao" />
+      </basic>
+      <basic name="dataFinalizacao">
+        <column name="data_finalizacao" />
+      </basic>
+      <basic name="dataEntrega">
+        <column name="data_entrega" />
+      </basic>
+      <basic name="dataCancelamento">
+        <column name="data_cancelamento" />
+      </basic>
+      <basic name="estoqueBaixado">
+        <column name="estoque_baixado" nullable="false" />
+      </basic>
+      <basic name="dataBaixaEstoque">
+        <column name="data_baixa_estoque" />
+      </basic>
+      <basic name="estoqueDevolvido">
+        <column name="estoque_devolvido" nullable="false" />
+      </basic>
+      <basic name="dataDevolucaoEstoque">
+        <column name="data_devolucao_estoque" />
+      </basic>
+      <version name="versao">
+        <column name="versao" />
+      </version>
+      <many-to-one name="cliente" fetch="LAZY" optional="false">
+        <join-column name="cliente_id" nullable="false" />
+      </many-to-one>
+      <many-to-one name="veiculo" fetch="LAZY" optional="false">
+        <join-column name="veiculo_id" nullable="false" />
+      </many-to-one>
+      <one-to-many name="itensServico" mapped-by="ordemServico" target-entity="br.com.fiap.oficina.domain.ordemservico.ItemServico" orphan-removal="true">
+        <cascade>
+          <cascade-all />
+        </cascade>
+      </one-to-many>
+      <one-to-many name="itensPeca" mapped-by="ordemServico" target-entity="br.com.fiap.oficina.domain.ordemservico.ItemPeca" orphan-removal="true">
+        <cascade>
+          <cascade-all />
+        </cascade>
+      </one-to-many>
+    </attributes>
+  </entity>
+  <entity class="br.com.fiap.oficina.domain.peca.Peca" access="FIELD" metadata-complete="true">
+    <table name="pecas" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="codigo">
+        <column nullable="false" length="50" name="codigo" />
+      </basic>
+      <basic name="nome">
+        <column nullable="false" length="150" name="nome" />
+      </basic>
+      <basic name="descricao">
+        <column length="500" name="descricao" />
+      </basic>
+      <basic name="valor">
+        <column nullable="false" precision="12" scale="2" name="valor" />
+      </basic>
+      <basic name="quantidadeEstoque">
+        <column name="quantidade_estoque" nullable="false" />
+      </basic>
+      <basic name="ativo">
+        <column nullable="false" name="ativo" />
+      </basic>
+      <version name="versao">
+        <column name="versao" />
+      </version>
+      <one-to-many name="itensPeca" mapped-by="peca" target-entity="br.com.fiap.oficina.domain.ordemservico.ItemPeca" />
+    </attributes>
+  </entity>
+  <entity class="br.com.fiap.oficina.domain.servico.Servico" access="FIELD" metadata-complete="true">
+    <table name="servicos" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="nome">
+        <column nullable="false" length="150" name="nome" />
+      </basic>
+      <basic name="descricao">
+        <column length="500" name="descricao" />
+      </basic>
+      <basic name="valor">
+        <column nullable="false" precision="12" scale="2" name="valor" />
+      </basic>
+      <basic name="tempoEstimadoMinutos">
+        <column name="tempo_estimado_minutos" nullable="false" />
+      </basic>
+      <basic name="ativo">
+        <column nullable="false" name="ativo" />
+      </basic>
+      <one-to-many name="itensServico" mapped-by="servico" target-entity="br.com.fiap.oficina.domain.ordemservico.ItemServico" />
+    </attributes>
+  </entity>
+  <entity class="br.com.fiap.oficina.domain.usuario.Usuario" access="FIELD" metadata-complete="true">
+    <table name="usuarios" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="email">
+        <column nullable="false" length="150" name="email" />
+      </basic>
+      <basic name="senha">
+        <column nullable="false" length="100" name="senha" />
+      </basic>
+      <basic name="perfil">
+        <column nullable="false" length="30" name="perfil" />
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="ativo">
+        <column nullable="false" name="ativo" />
+      </basic>
+    </attributes>
+  </entity>
+  <entity class="br.com.fiap.oficina.domain.veiculo.Veiculo" access="FIELD" metadata-complete="true">
+    <table name="veiculos" />
+    <attributes>
+      <id name="id">
+        <column name="id" />
+        <generated-value strategy="IDENTITY" />
+      </id>
+      <basic name="placa">
+        <column nullable="false" length="7" name="placa" />
+      </basic>
+      <basic name="marca">
+        <column nullable="false" length="100" name="marca" />
+      </basic>
+      <basic name="modelo">
+        <column nullable="false" length="100" name="modelo" />
+      </basic>
+      <basic name="ano">
+        <column nullable="false" name="ano" />
+      </basic>
+      <many-to-one name="cliente" fetch="LAZY" optional="false">
+        <join-column name="cliente_id" nullable="false" />
+      </many-to-one>
+      <one-to-many name="ordensServico" mapped-by="veiculo" target-entity="br.com.fiap.oficina.domain.ordemservico.OrdemServico" />
+    </attributes>
+  </entity>
+</entity-mappings>

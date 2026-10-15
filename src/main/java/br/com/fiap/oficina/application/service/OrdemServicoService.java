@@ -13,7 +13,7 @@ import br.com.fiap.oficina.application.dto.ordemservico.OrdemServicoRequest;
 import br.com.fiap.oficina.application.dto.ordemservico.OrdemServicoResponse;
 import br.com.fiap.oficina.application.dto.ordemservico.TempoMedioExecucaoResponse;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.application.mapper.OrdemServicoMapper;
 import br.com.fiap.oficina.domain.cliente.Cliente;
 import br.com.fiap.oficina.domain.ordemservico.ItemPeca;
@@ -23,7 +23,7 @@ import br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico;
 import br.com.fiap.oficina.domain.peca.Peca;
 import br.com.fiap.oficina.domain.servico.Servico;
 import br.com.fiap.oficina.domain.veiculo.Veiculo;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,11 +44,12 @@ public class OrdemServicoService {
     private static final DateTimeFormatter FORMATO_NUMERO_OS =
             DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    private final OrdemServicoRepository ordemServicoRepository;
-    private final ClienteService clienteService;
-    private final VeiculoService veiculoService;
-    private final ServicoService servicoService;
-    private final PecaService pecaService;
+    private final OrdemServicoStore ordemServicoRepository;
+    private final br.com.fiap.oficina.application.port.out.NotificacaoPort notificacaoPort;
+    private final br.com.fiap.oficina.application.port.out.ConsultaClientePort clienteService;
+    private final br.com.fiap.oficina.application.port.out.ConsultaVeiculoPort veiculoService;
+    private final br.com.fiap.oficina.application.port.out.ConsultaServicoPort servicoService;
+    private final br.com.fiap.oficina.application.port.out.ConsultaPecaPort pecaService;
 
     @Transactional
     public OrdemServicoResponse criar(
@@ -73,6 +74,8 @@ public class OrdemServicoService {
                 .dataCriacao(LocalDateTime.now())
                 .build();
 
+        StatusOrdemServico statusAnterior = null;
+
         adicionarServicos(
                 ordemServico,
                 request.servicos()
@@ -86,14 +89,14 @@ public class OrdemServicoService {
         ordemServico.recalcularValorTotal();
 
         OrdemServico ordemSalva =
-                ordemServicoRepository.save(ordemServico);
+                salvarComNotificacao(ordemServico, statusAnterior);
 
         return OrdemServicoMapper.paraResponse(ordemSalva);
     }
 
     @Transactional(readOnly = true)
     public List<OrdemServicoResponse> listarTodas() {
-        return ordemServicoRepository.buscarTodasComDetalhes()
+        return ordemServicoRepository.buscarFilaOperacional()
                 .stream()
                 .map(OrdemServicoMapper::paraResponse)
                 .toList();
@@ -330,11 +333,12 @@ public class OrdemServicoService {
         OrdemServico ordemServico = buscarEntidadePorId(
                 ordemServicoId
         );
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         ordemServico.recalcularValorTotal();
 
         OrdemServico ordemAtualizada =
-                ordemServicoRepository.save(ordemServico);
+                salvarComNotificacao(ordemServico, statusAnterior);
 
         return montarOrcamentoResponse(ordemAtualizada);
     }
@@ -401,6 +405,7 @@ public class OrdemServicoService {
     ) {
         OrdemServico ordemServico =
                 buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         Servico servico = servicoService.buscarEntidadePorId(
                 request.servicoId()
@@ -431,7 +436,7 @@ public class OrdemServicoService {
         ordemServico.recalcularValorTotal();
 
         OrdemServico ordemSalva =
-                ordemServicoRepository.save(ordemServico);
+                salvarComNotificacao(ordemServico, statusAnterior);
 
         return OrdemServicoMapper.paraResponse(ordemSalva);
     }
@@ -443,6 +448,7 @@ public class OrdemServicoService {
     ) {
         OrdemServico ordemServico =
                 buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         Peca peca = pecaService.buscarEntidadePorId(
                 request.pecaId()
@@ -482,7 +488,7 @@ public class OrdemServicoService {
         ordemServico.recalcularValorTotal();
 
         OrdemServico ordemSalva =
-                ordemServicoRepository.save(ordemServico);
+                salvarComNotificacao(ordemServico, statusAnterior);
 
         return OrdemServicoMapper.paraResponse(ordemSalva);
     }
@@ -493,6 +499,7 @@ public class OrdemServicoService {
             Long pecaId
     ) {
         OrdemServico ordemServico = buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
         ItemPeca itemPeca = ordemServico.buscarItemPecaPorPecaId(pecaId);
 
         if (itemPeca == null) {
@@ -504,7 +511,7 @@ public class OrdemServicoService {
         ordemServico.removerPeca(itemPeca);
 
         return OrdemServicoMapper.paraResponse(
-                ordemServicoRepository.save(ordemServico)
+                salvarComNotificacao(ordemServico, statusAnterior)
         );
     }
 
@@ -648,11 +655,12 @@ public class OrdemServicoService {
     ) {
         OrdemServico ordemServico =
                 buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         ordemServico.enviarParaAprovacao();
 
         OrdemServico ordemSalva =
-                ordemServicoRepository.save(ordemServico);
+                salvarComNotificacao(ordemServico, statusAnterior);
 
         return montarAprovacaoOrcamentoResponse(ordemSalva);
     }
@@ -664,6 +672,7 @@ public class OrdemServicoService {
     ) {
         OrdemServico ordemServico =
                 buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         String observacao =
                 request == null
@@ -673,7 +682,7 @@ public class OrdemServicoService {
         ordemServico.aprovarOrcamentoAutomaticamente(observacao);
 
         OrdemServico ordemSalva =
-                ordemServicoRepository.save(ordemServico);
+                salvarComNotificacao(ordemServico, statusAnterior);
 
         return montarAprovacaoOrcamentoResponse(ordemSalva);
     }
@@ -685,6 +694,7 @@ public class OrdemServicoService {
     ) {
         OrdemServico ordemServico =
                 buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         String observacao =
                 request == null
@@ -694,7 +704,7 @@ public class OrdemServicoService {
         ordemServico.recusarOrcamentoAutomaticamente(observacao);
 
         OrdemServico ordemSalva =
-                ordemServicoRepository.save(ordemServico);
+                salvarComNotificacao(ordemServico, statusAnterior);
 
         return montarAprovacaoOrcamentoResponse(ordemSalva);
     }
@@ -702,33 +712,36 @@ public class OrdemServicoService {
     @Transactional
     public OrdemServicoResponse finalizar(Long ordemServicoId) {
         OrdemServico ordemServico = buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         ordemServico.finalizarExecucao();
 
         return OrdemServicoMapper.paraResponse(
-                ordemServicoRepository.save(ordemServico)
+                salvarComNotificacao(ordemServico, statusAnterior)
         );
     }
 
     @Transactional
     public OrdemServicoResponse entregar(Long ordemServicoId) {
         OrdemServico ordemServico = buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         ordemServico.entregarVeiculo();
 
         return OrdemServicoMapper.paraResponse(
-                ordemServicoRepository.save(ordemServico)
+                salvarComNotificacao(ordemServico, statusAnterior)
         );
     }
 
     @Transactional
     public OrdemServicoResponse cancelar(Long ordemServicoId) {
         OrdemServico ordemServico = buscarEntidadePorId(ordemServicoId);
+        StatusOrdemServico statusAnterior = ordemServico.getStatus();
 
         ordemServico.cancelar();
 
         return OrdemServicoMapper.paraResponse(
-                ordemServicoRepository.save(ordemServico)
+                salvarComNotificacao(ordemServico, statusAnterior)
         );
     }
 
@@ -743,7 +756,23 @@ public class OrdemServicoService {
                 ordemServico.getStatusAprovacaoOrcamento(),
                 ordemServico.getValorTotal(),
                 ordemServico.getDataAprovacaoOrcamento(),
-                ordemServico.getObservacaoAprovacaoOrcamento()
-        );
+                ordemServico.getObservacaoAprovacaoOrcamento(),
+                ordemServico.getVersaoOrcamento());
     }
+    private OrdemServico salvarComNotificacao(OrdemServico ordem, StatusOrdemServico anterior) {
+        OrdemServico salva = ordemServicoRepository.save(ordem);
+        if (anterior != salva.getStatus()) {
+            notificacaoPort.registrarMudanca(salva);
+        }
+        return salva;
+    }
+
+    @Transactional
+    public OrdemServicoResponse iniciarDiagnostico(Long id) {
+        OrdemServico ordem = buscarEntidadePorId(id);
+        StatusOrdemServico anterior = ordem.getStatus();
+        ordem.iniciarDiagnostico();
+        return OrdemServicoMapper.paraResponse(salvarComNotificacao(ordem, anterior));
+    }
+
 }

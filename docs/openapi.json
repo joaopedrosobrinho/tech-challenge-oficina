@@ -1,0 +1,3753 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API da Oficina Mecânica",
+    "description": "API REST do Tech Challenge FIAP para gestão de clientes, veículos, serviços, peças, estoque e ordens de serviço.",
+    "contact": {
+      "name": "Tech Challenge FIAP"
+    },
+    "license": {
+      "name": "Uso acadêmico"
+    },
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Ambiente local"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticação",
+      "description": "Autenticação de usuários administrativos"
+    },
+    {
+      "name": "Veículos",
+      "description": "Cadastro e consulta de veículos dos clientes"
+    },
+    {
+      "name": "Ordens de serviço",
+      "description": "Fluxo completo da ordem de serviço, orçamento, execução e indicadores"
+    },
+    {
+      "name": "Acompanhamento público",
+      "description": "Consulta pública e limitada do andamento da ordem de serviço"
+    },
+    {
+      "name": "Peças e estoque",
+      "description": "Catálogo de peças e movimentações de estoque"
+    },
+    {
+      "name": "Clientes",
+      "description": "Cadastro e consulta de clientes da oficina"
+    },
+    {
+      "name": "Serviços",
+      "description": "Catálogo de serviços prestados pela oficina"
+    }
+  ],
+  "paths": {
+    "/api/veiculos/{id}": {
+      "get": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Buscar veículo por ID",
+        "operationId": "buscarPorId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeiculoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Atualizar veículo",
+        "operationId": "atualizar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeiculoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeiculoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Excluir veículo",
+        "description": "Exclui somente veículos sem ordens de serviço vinculadas.",
+        "operationId": "excluir",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/servicos/{id}": {
+      "get": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Buscar serviço por ID",
+        "operationId": "buscarPorId_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Atualizar serviço",
+        "operationId": "atualizar_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServicoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Excluir serviço",
+        "operationId": "excluir_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/{id}": {
+      "get": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Buscar peça por ID",
+        "operationId": "buscarPorId_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Atualizar peça",
+        "operationId": "atualizar_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PecaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Excluir peça",
+        "operationId": "excluir_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/clientes/{id}": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Buscar cliente por ID",
+        "operationId": "buscarPorId_3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Atualizar cliente",
+        "operationId": "atualizar_3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClienteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Excluir cliente",
+        "description": "Exclui somente clientes sem ordens de serviço vinculadas.",
+        "operationId": "excluir_3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/veiculos": {
+      "get": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Listar veículos",
+        "operationId": "listarTodos",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VeiculoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Cadastrar veículo",
+        "operationId": "cadastrar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeiculoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeiculoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/servicos": {
+      "get": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Listar serviços",
+        "operationId": "listarTodos_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Cadastrar serviço",
+        "operationId": "cadastrar_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServicoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas": {
+      "get": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Listar peças",
+        "operationId": "listarTodas",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PecaResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Cadastrar peça",
+        "operationId": "cadastrar_2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PecaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Listar ordens de serviço",
+        "operationId": "listarTodas_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Criar ordem de serviço",
+        "description": "Cria a OS e calcula o orçamento inicial a partir dos itens informados.",
+        "operationId": "criar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrdemServicoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/servicos": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Adicionar serviço à OS",
+        "description": "Inclui ou incrementa um serviço antes da execução.",
+        "operationId": "adicionarServico",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdicionarServicoOrdemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/pecas": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Adicionar peça à OS",
+        "description": "Inclui ou incrementa uma peça antes da execução.",
+        "operationId": "adicionarPeca",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdicionarPecaOrdemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/orcamento/recusar": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Recusar orçamento",
+        "description": "Retorna a OS ao diagnóstico; a observação da recusa é obrigatória.",
+        "operationId": "recusarOrcamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AprovacaoOrcamentoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AprovacaoOrcamentoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/orcamento/recalcular": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Recalcular orçamento",
+        "operationId": "recalcularOrcamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrcamentoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/orcamento/enviar-aprovacao": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Enviar orçamento para aprovação",
+        "operationId": "enviarOrcamentoParaAprovacao",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AprovacaoOrcamentoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/orcamento/aprovar": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Aprovar orçamento",
+        "description": "Inicia a execução e realiza a baixa automática do estoque.",
+        "operationId": "aprovarOrcamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AprovacaoOrcamentoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AprovacaoOrcamentoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/finalizar": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Finalizar ordem de serviço",
+        "operationId": "finalizar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/entregar": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Registrar entrega do veículo",
+        "operationId": "entregar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/diagnostico": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "operationId": "iniciarDiagnostico",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/cancelar": {
+      "post": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Cancelar ordem de serviço",
+        "description": "Quando aplicável, devolve automaticamente ao estoque as peças já baixadas.",
+        "operationId": "cancelar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/integracoes/ordens-servico/{id}/aprovacao": {
+      "post": {
+        "tags": [
+          "aprovacao-externa-controller"
+        ],
+        "operationId": "receber",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisaoExternaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        },
+        "security": [
+          {
+            "integracaoKey": []
+          }
+        ]
+      }
+    },
+    "/api/clientes": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Listar clientes",
+        "operationId": "listarTodos_2",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClienteResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Cadastrar cliente",
+        "description": "Cadastra um cliente com CPF ou CNPJ válido e e-mail único.",
+        "operationId": "cadastrar_3",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClienteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Autenticação"
+        ],
+        "summary": "Autenticar usuário",
+        "description": "Valida as credenciais administrativas e retorna um token JWT do tipo Bearer.",
+        "operationId": "autenticar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/servicos/{id}/desativar": {
+      "patch": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Desativar serviço",
+        "operationId": "desativar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/servicos/{id}/ativar": {
+      "patch": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Ativar serviço",
+        "operationId": "ativar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/{id}/saida-estoque": {
+      "patch": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Registrar saída do estoque",
+        "description": "Impede que o estoque fique negativo.",
+        "operationId": "retirarEstoque",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovimentacaoEstoqueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/{id}/entrada-estoque": {
+      "patch": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Registrar entrada no estoque",
+        "operationId": "adicionarEstoque",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovimentacaoEstoqueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/{id}/desativar": {
+      "patch": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Desativar peça",
+        "operationId": "desativar_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/{id}/ativar": {
+      "patch": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Ativar peça",
+        "operationId": "ativar_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/veiculos/placa/{placa}": {
+      "get": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Buscar veículo por placa",
+        "operationId": "buscarPorPlaca",
+        "parameters": [
+          {
+            "name": "placa",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VeiculoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/veiculos/cliente/{clienteId}": {
+      "get": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Listar veículos de um cliente",
+        "operationId": "listarPorCliente",
+        "parameters": [
+          {
+            "name": "clienteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VeiculoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/servicos/pesquisa": {
+      "get": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Pesquisar serviços por nome",
+        "operationId": "pesquisarPorNome",
+        "parameters": [
+          {
+            "name": "nome",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/servicos/ativos": {
+      "get": {
+        "tags": [
+          "Serviços"
+        ],
+        "summary": "Listar serviços ativos",
+        "operationId": "listarAtivos",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/publico/ordens-servico/{numeroOs}": {
+      "get": {
+        "tags": [
+          "Acompanhamento público"
+        ],
+        "summary": "Acompanhar ordem de serviço",
+        "description": "Consulta o progresso usando número da OS e placa do veículo, sem expor dados pessoais.",
+        "operationId": "acompanhar",
+        "parameters": [
+          {
+            "name": "numeroOs",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "placa",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcompanhamentoOrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/pecas/pesquisa": {
+      "get": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Pesquisar peças por nome",
+        "operationId": "pesquisarPorNome_1",
+        "parameters": [
+          {
+            "name": "nome",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PecaResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/estoque-baixo": {
+      "get": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Listar peças com estoque baixo",
+        "operationId": "listarEstoqueBaixo",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5,
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PecaResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/codigo/{codigo}": {
+      "get": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Buscar peça por código",
+        "operationId": "buscarPorCodigo",
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PecaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/pecas/ativas": {
+      "get": {
+        "tags": [
+          "Peças e estoque"
+        ],
+        "summary": "Listar peças ativas",
+        "operationId": "listarAtivas",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PecaResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Buscar ordem de serviço por ID",
+        "operationId": "buscarPorId_4",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/orcamento": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Consultar orçamento da OS",
+        "operationId": "consultarOrcamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrcamentoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/duracao-execucao": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Consultar duração da execução",
+        "operationId": "consultarDuracaoExecucao",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DuracaoExecucaoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/veiculo/{veiculoId}": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Listar ordens por veículo",
+        "operationId": "listarPorVeiculo",
+        "parameters": [
+          {
+            "name": "veiculoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/status/{status}": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Listar ordens por status",
+        "operationId": "listarPorStatus",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RECEBIDA",
+                "EM_DIAGNOSTICO",
+                "AGUARDANDO_APROVACAO",
+                "EM_EXECUCAO",
+                "FINALIZADA",
+                "ENTREGUE",
+                "CANCELADA"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/numero/{numeroOs}": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Buscar ordem de serviço pelo número",
+        "operationId": "buscarPorNumero",
+        "parameters": [
+          {
+            "name": "numeroOs",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/indicadores/tempo-medio-execucao": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Consultar tempo médio de execução",
+        "operationId": "consultarTempoMedioExecucao",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TempoMedioExecucaoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/cliente/{clienteId}": {
+      "get": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Listar ordens por cliente",
+        "operationId": "listarPorCliente_1",
+        "parameters": [
+          {
+            "name": "clienteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/clientes/documento/{cpfCnpj}": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Buscar cliente por CPF/CNPJ",
+        "operationId": "buscarPorCpfCnpj",
+        "parameters": [
+          {
+            "name": "cpfCnpj",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    },
+    "/api/ordens-servico/{id}/pecas/{pecaId}": {
+      "delete": {
+        "tags": [
+          "Ordens de serviço"
+        ],
+        "summary": "Remover peça da OS",
+        "description": "Remove uma peça antes do início da execução.",
+        "operationId": "removerPeca",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "pecaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdemServicoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "404": {
+            "description": "Recurso não encontrado"
+          },
+          "409": {
+            "description": "Conflito com regra de negócio ou integridade"
+          },
+          "422": {
+            "description": "Regra de domínio não atendida"
+          },
+          "500": {
+            "description": "Erro interno inesperado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "VeiculoRequest": {
+        "type": "object",
+        "properties": {
+          "placa": {
+            "type": "string",
+            "example": "ABC1D23",
+            "minLength": 1
+          },
+          "marca": {
+            "type": "string",
+            "example": "Honda",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "modelo": {
+            "type": "string",
+            "example": "Civic",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "ano": {
+            "type": "integer",
+            "format": "int32",
+            "example": 2022,
+            "maximum": 2100,
+            "minimum": 1900
+          },
+          "clienteId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          }
+        },
+        "required": [
+          "ano",
+          "clienteId",
+          "marca",
+          "modelo",
+          "placa"
+        ]
+      },
+      "VeiculoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "placa": {
+            "type": "string"
+          },
+          "marca": {
+            "type": "string"
+          },
+          "modelo": {
+            "type": "string"
+          },
+          "ano": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nomeCliente": {
+            "type": "string"
+          }
+        }
+      },
+      "ServicoRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Troca de óleo",
+            "maxLength": 150,
+            "minLength": 0
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Substituição do óleo e do filtro",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "valor": {
+            "type": "number",
+            "example": 150.0,
+            "minimum": 0.01
+          },
+          "tempoEstimadoMinutos": {
+            "type": "integer",
+            "format": "int32",
+            "example": 60,
+            "minimum": 1
+          },
+          "ativo": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "nome",
+          "tempoEstimadoMinutos",
+          "valor"
+        ]
+      },
+      "ServicoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "tempoEstimadoMinutos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PecaRequest": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "example": "FLT-001",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "nome": {
+            "type": "string",
+            "example": "Filtro de óleo",
+            "maxLength": 150,
+            "minLength": 0
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Filtro compatível com o veículo",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "valor": {
+            "type": "number",
+            "example": 45.9,
+            "minimum": 0.01
+          },
+          "quantidadeEstoque": {
+            "type": "integer",
+            "format": "int32",
+            "example": 20,
+            "minimum": 0
+          },
+          "ativo": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "codigo",
+          "nome",
+          "quantidadeEstoque",
+          "valor"
+        ]
+      },
+      "PecaResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "codigo": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "quantidadeEstoque": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ClienteRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Maria da Silva",
+            "maxLength": 150,
+            "minLength": 0
+          },
+          "cpfCnpj": {
+            "type": "string",
+            "example": "529.982.247-25",
+            "maxLength": 18,
+            "minLength": 0
+          },
+          "telefone": {
+            "type": "string",
+            "example": "(11) 91234-5678",
+            "minLength": 1,
+            "pattern": "^(?:\\d{10,11}|\\(?\\d{2}\\)?[\\s-]?\\d{4,5}-?\\d{4})$"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "maria.silva@email.com",
+            "maxLength": 150,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "cpfCnpj",
+          "email",
+          "nome",
+          "telefone"
+        ]
+      },
+      "ClienteResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "cpfCnpj": {
+            "type": "string"
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "ItemPecaRequest": {
+        "type": "object",
+        "properties": {
+          "pecaId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "quantidade": {
+            "type": "integer",
+            "format": "int32",
+            "example": 2
+          }
+        },
+        "required": [
+          "pecaId",
+          "quantidade"
+        ]
+      },
+      "ItemServicoRequest": {
+        "type": "object",
+        "properties": {
+          "servicoId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "quantidade": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          }
+        },
+        "required": [
+          "quantidade",
+          "servicoId"
+        ]
+      },
+      "OrdemServicoRequest": {
+        "type": "object",
+        "properties": {
+          "clienteId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "veiculoId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "observacoes": {
+            "type": "string",
+            "example": "Cliente relata ruído ao frear",
+            "maxLength": 1000,
+            "minLength": 0
+          },
+          "servicos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemServicoRequest"
+            },
+            "minItems": 1
+          },
+          "pecas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemPecaRequest"
+            }
+          }
+        },
+        "required": [
+          "clienteId",
+          "servicos",
+          "veiculoId"
+        ]
+      },
+      "ItemPecaResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pecaId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "codigoPeca": {
+            "type": "string"
+          },
+          "nomePeca": {
+            "type": "string"
+          },
+          "quantidade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "valorUnitario": {
+            "type": "number"
+          },
+          "subtotal": {
+            "type": "number"
+          }
+        }
+      },
+      "ItemServicoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "servicoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nomeServico": {
+            "type": "string"
+          },
+          "quantidade": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "valorUnitario": {
+            "type": "number"
+          },
+          "subtotal": {
+            "type": "number"
+          }
+        }
+      },
+      "OrdemServicoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numeroOs": {
+            "type": "string"
+          },
+          "clienteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nomeCliente": {
+            "type": "string"
+          },
+          "cpfCnpjCliente": {
+            "type": "string"
+          },
+          "veiculoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "placaVeiculo": {
+            "type": "string"
+          },
+          "marcaVeiculo": {
+            "type": "string"
+          },
+          "modeloVeiculo": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RECEBIDA",
+              "EM_DIAGNOSTICO",
+              "AGUARDANDO_APROVACAO",
+              "EM_EXECUCAO",
+              "FINALIZADA",
+              "ENTREGUE",
+              "CANCELADA"
+            ]
+          },
+          "valorTotal": {
+            "type": "number"
+          },
+          "observacoes": {
+            "type": "string"
+          },
+          "dataCriacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataEnvioOrcamento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataAprovacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataInicioExecucao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataFinalizacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataEntrega": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataCancelamento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estoqueBaixado": {
+            "type": "boolean"
+          },
+          "dataBaixaEstoque": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estoqueDevolvido": {
+            "type": "boolean"
+          },
+          "dataDevolucaoEstoque": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "servicos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemServicoResponse"
+            }
+          },
+          "pecas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemPecaResponse"
+            }
+          }
+        }
+      },
+      "AdicionarServicoOrdemRequest": {
+        "type": "object",
+        "properties": {
+          "servicoId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "quantidade": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          }
+        },
+        "required": [
+          "quantidade",
+          "servicoId"
+        ]
+      },
+      "AdicionarPecaOrdemRequest": {
+        "type": "object",
+        "properties": {
+          "pecaId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "quantidade": {
+            "type": "integer",
+            "format": "int32",
+            "example": 2
+          }
+        },
+        "required": [
+          "pecaId",
+          "quantidade"
+        ]
+      },
+      "AprovacaoOrcamentoRequest": {
+        "type": "object",
+        "properties": {
+          "observacao": {
+            "type": "string",
+            "example": "Orçamento aprovado pelo cliente",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        }
+      },
+      "AprovacaoOrcamentoResponse": {
+        "type": "object",
+        "properties": {
+          "ordemServicoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numeroOs": {
+            "type": "string"
+          },
+          "statusOrdemServico": {
+            "type": "string",
+            "enum": [
+              "RECEBIDA",
+              "EM_DIAGNOSTICO",
+              "AGUARDANDO_APROVACAO",
+              "EM_EXECUCAO",
+              "FINALIZADA",
+              "ENTREGUE",
+              "CANCELADA"
+            ]
+          },
+          "statusAprovacao": {
+            "type": "string",
+            "enum": [
+              "PENDENTE",
+              "APROVADO",
+              "RECUSADO"
+            ]
+          },
+          "valorTotal": {
+            "type": "number"
+          },
+          "dataAprovacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "observacao": {
+            "type": "string"
+          },
+          "versaoOrcamento": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "OrcamentoResponse": {
+        "type": "object",
+        "properties": {
+          "ordemServicoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numeroOs": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RECEBIDA",
+              "EM_DIAGNOSTICO",
+              "AGUARDANDO_APROVACAO",
+              "EM_EXECUCAO",
+              "FINALIZADA",
+              "ENTREGUE",
+              "CANCELADA"
+            ]
+          },
+          "quantidadeServicos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantidadePecas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalServicos": {
+            "type": "number"
+          },
+          "totalPecas": {
+            "type": "number"
+          },
+          "valorTotal": {
+            "type": "number"
+          },
+          "calculadoEm": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DecisaoExternaRequest": {
+        "type": "object",
+        "properties": {
+          "eventoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "versaoOrcamento": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "aprovada": {
+            "type": "boolean"
+          },
+          "observacao": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "aprovada",
+          "eventoId",
+          "versaoOrcamento"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "usuario@exemplo.com",
+            "maxLength": 150,
+            "minLength": 0
+          },
+          "senha": {
+            "type": "string",
+            "format": "password",
+            "example": "sua-senha",
+            "maxLength": 100,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "email",
+          "senha"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "perfil": {
+            "type": "string",
+            "enum": [
+              "ADMIN"
+            ]
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "expiraEm": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MovimentacaoEstoqueRequest": {
+        "type": "object",
+        "properties": {
+          "quantidade": {
+            "type": "integer",
+            "format": "int32",
+            "example": 5
+          }
+        },
+        "required": [
+          "quantidade"
+        ]
+      },
+      "AcompanhamentoOrdemServicoResponse": {
+        "type": "object",
+        "properties": {
+          "numeroOs": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RECEBIDA",
+              "EM_DIAGNOSTICO",
+              "AGUARDANDO_APROVACAO",
+              "EM_EXECUCAO",
+              "FINALIZADA",
+              "ENTREGUE",
+              "CANCELADA"
+            ]
+          },
+          "etapaAtual": {
+            "type": "string"
+          },
+          "dataCriacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataInicioExecucao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataFinalizacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataEntrega": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataCancelamento": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DuracaoExecucaoResponse": {
+        "type": "object",
+        "properties": {
+          "ordemServicoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numeroOs": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RECEBIDA",
+              "EM_DIAGNOSTICO",
+              "AGUARDANDO_APROVACAO",
+              "EM_EXECUCAO",
+              "FINALIZADA",
+              "ENTREGUE",
+              "CANCELADA"
+            ]
+          },
+          "dataInicioExecucao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataTerminoConsiderada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duracaoSegundos": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "duracaoMinutos": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "emAndamento": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TempoMedioExecucaoResponse": {
+        "type": "object",
+        "properties": {
+          "quantidadeOrdensConsideradas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tempoMedioSegundos": {
+            "type": "number"
+          },
+          "tempoMedioMinutos": {
+            "type": "number"
+          },
+          "calculadoEm": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "integracaoKey": {
+        "type": "apiKey",
+        "name": "X-Integration-Key",
+        "in": "header"
+      }
+    }
+  }
+}

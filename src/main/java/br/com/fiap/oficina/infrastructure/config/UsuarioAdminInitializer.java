@@ -18,6 +18,7 @@ import java.util.Locale;
 public class UsuarioAdminInitializer implements ApplicationRunner {
 
     private final UsuarioRepository usuarioRepository;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbc;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${oficina.security.admin.email}")
@@ -35,11 +36,9 @@ public class UsuarioAdminInitializer implements ApplicationRunner {
             return;
         }
 
-        usuarioRepository.save(Usuario.builder()
-                .email(emailNormalizado)
-                .senha(passwordEncoder.encode(senha))
-                .perfil(PerfilUsuario.ADMIN)
-                .ativo(true)
-                .build());
+        jdbc.update("""
+                INSERT INTO usuarios (email, senha, perfil, ativo) VALUES (?, ?, 'ADMIN', true)
+                ON CONFLICT (email) DO NOTHING
+                """, emailNormalizado, passwordEncoder.encode(senha));
     }
 }

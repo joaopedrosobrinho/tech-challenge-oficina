@@ -3,11 +3,11 @@ package br.com.fiap.oficina.application.service;
 import br.com.fiap.oficina.application.dto.cliente.ClienteRequest;
 import br.com.fiap.oficina.application.dto.cliente.ClienteResponse;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.application.mapper.ClienteMapper;
 import br.com.fiap.oficina.domain.cliente.Cliente;
-import br.com.fiap.oficina.infrastructure.repository.ClienteRepository;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
+import br.com.fiap.oficina.application.port.out.ClienteStore;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
 import br.com.fiap.oficina.application.validation.CpfCnpjValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +17,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ClienteService {
+public class ClienteService implements br.com.fiap.oficina.application.port.out.ConsultaClientePort {
 
-    private final ClienteRepository clienteRepository;
-    private final OrdemServicoRepository ordemServicoRepository;
+    private final ClienteStore clienteRepository;
+    private final OrdemServicoStore ordemServicoRepository;
 
     @Transactional
     public ClienteResponse cadastrar(ClienteRequest request) {

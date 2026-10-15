@@ -1,27 +1,9 @@
 package br.com.fiap.oficina.domain.ordemservico;
 
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.domain.cliente.Cliente;
 import br.com.fiap.oficina.domain.peca.Peca;
 import br.com.fiap.oficina.domain.veiculo.Veiculo;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,16 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
-@Table(
-        name = "ordens_servico",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_ordem_servico_numero",
-                        columnNames = "numero_os"
-                )
-        }
-)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -57,125 +29,70 @@ import java.util.Set;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class OrdemServico {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(
-            name = "numero_os",
-            nullable = false,
-            length = 30,
-            unique = true
-    )
+    private Long versao;
+
+    @Builder.Default
+    private Long versaoOrcamento = 0L;
+
     private String numeroOs;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "cliente_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_os_cliente")
-    )
     private Cliente cliente;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "veiculo_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_os_veiculo")
-    )
     private Veiculo veiculo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(
-            name = "status_aprovacao_orcamento",
-            length = 30
-    )
     @Builder.Default
     private StatusAprovacaoOrcamento statusAprovacaoOrcamento =
             StatusAprovacaoOrcamento.PENDENTE;
 
-    @Column(name = "data_aprovacao_orcamento")
     private LocalDateTime dataAprovacaoOrcamento;
 
-    @Column(
-            name = "observacao_aprovacao_orcamento",
-            length = 500
-    )
     private String observacaoAprovacaoOrcamento;
 
-    @Enumerated(EnumType.STRING)
-    @Column(
-            name = "status",
-            nullable = false,
-            length = 30
-    )
     private StatusOrdemServico status;
 
     @Builder.Default
-    @Column(
-            name = "valor_total",
-            nullable = false,
-            precision = 12,
-            scale = 2
-    )
+
     private BigDecimal valorTotal = BigDecimal.ZERO;
 
-    @Column(name = "observacoes", length = 1000)
     private String observacoes;
 
-    @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
 
-    @Column(name = "data_envio_orcamento")
     private LocalDateTime dataEnvioOrcamento;
 
-    @Column(name = "data_aprovacao")
     private LocalDateTime dataAprovacao;
 
-    @Column(name = "data_inicio_execucao")
     private LocalDateTime dataInicioExecucao;
 
-    @Column(name = "data_finalizacao")
     private LocalDateTime dataFinalizacao;
 
-    @Column(name = "data_entrega")
     private LocalDateTime dataEntrega;
 
-    @Column(name = "data_cancelamento")
     private LocalDateTime dataCancelamento;
 
     @Builder.Default
-    @Column(name = "estoque_baixado", nullable = false)
+
     private Boolean estoqueBaixado = false;
 
-    @Column(name = "data_baixa_estoque")
     private LocalDateTime dataBaixaEstoque;
 
     @Builder.Default
-    @Column(name = "estoque_devolvido", nullable = false)
+
     private Boolean estoqueDevolvido = false;
 
-    @Column(name = "data_devolucao_estoque")
     private LocalDateTime dataDevolucaoEstoque;
 
     @Builder.Default
-    @OneToMany(
-            mappedBy = "ordemServico",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+
     private Set<ItemServico> itensServico = new LinkedHashSet<>();
 
     @Builder.Default
-    @OneToMany(
-            mappedBy = "ordemServico",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+
     private Set<ItemPeca> itensPeca = new LinkedHashSet<>();
 
-    @PrePersist
     public void antesDeSalvar() {
         if (dataCriacao == null) {
             dataCriacao = LocalDateTime.now();
@@ -196,7 +113,6 @@ public class OrdemServico {
         recalcularValorTotal();
     }
 
-    @PreUpdate
     public void antesDeAtualizar() {
         garantirColecoesInicializadas();
         validarDadosObrigatorios();
@@ -600,6 +516,7 @@ public class OrdemServico {
         this.status = StatusOrdemServico.AGUARDANDO_APROVACAO;
         this.statusAprovacaoOrcamento =
                 StatusAprovacaoOrcamento.PENDENTE;
+        this.versaoOrcamento++;
         this.dataEnvioOrcamento = LocalDateTime.now();
         this.dataAprovacaoOrcamento = null;
         this.observacaoAprovacaoOrcamento = null;

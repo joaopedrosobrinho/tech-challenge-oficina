@@ -5,7 +5,7 @@ import br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico;
 import br.com.fiap.oficina.domain.ordemservico.StatusAprovacaoOrcamento;
 import br.com.fiap.oficina.domain.ordemservico.ItemServico;
 import br.com.fiap.oficina.domain.ordemservico.ItemPeca;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
 import br.com.fiap.oficina.domain.veiculo.Veiculo;
 import br.com.fiap.oficina.domain.cliente.Cliente;
@@ -17,7 +17,7 @@ import br.com.fiap.oficina.application.dto.ordemservico.ItemPecaRequest;
 import br.com.fiap.oficina.application.dto.ordemservico.AdicionarServicoOrdemRequest;
 import br.com.fiap.oficina.application.dto.ordemservico.AdicionarPecaOrdemRequest;
 import br.com.fiap.oficina.application.dto.ordemservico.AprovacaoOrcamentoRequest;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 class OrdemServicoServiceTest {
 
     @Mock
-    private OrdemServicoRepository ordemServicoRepository;
+    private OrdemServicoStore ordemServicoRepository;
 
     @Mock
     private ClienteService clienteService;
@@ -53,6 +53,9 @@ class OrdemServicoServiceTest {
 
     @Mock
     private PecaService pecaService;
+
+    @Mock
+    private br.com.fiap.oficina.application.port.out.NotificacaoPort notificacaoPort;
 
     @InjectMocks
     private OrdemServicoService ordemServicoService;
@@ -471,7 +474,7 @@ class OrdemServicoServiceTest {
                 .thenReturn(Optional.of(ordemServico));
 
         assertThrows(
-                br.com.fiap.oficina.application.exception.RegraNegocioException.class,
+                br.com.fiap.oficina.domain.common.RegraNegocioException.class,
                 () -> ordemServicoService.consultarDuracaoExecucao(1L)
         );
     }
