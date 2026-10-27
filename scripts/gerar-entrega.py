@@ -66,13 +66,15 @@ if not args.video_url:
 paragraph('Repositório', 'Heading2')
 repo = 'https://github.com/joaopedrosobrinho/tech-challenge-oficina'
 paragraph(f'<link href="{repo}" color="#245c8a">{repo}</link>')
-paragraph('Branch de desenvolvimento: <b>tech-challenge-oficina-fase-2</b>. As alterações locais precisam ser publicadas antes da entrega. Conferir também o acesso do usuário <b>soat-architecture</b>.')
+branch_url = repo + '/tree/tech-challenge-oficina-fase-2'
+paragraph(f'Código da fase 2: <link href="{branch_url}" color="#245c8a">branch tech-challenge-oficina-fase-2</link>.')
 paragraph('Demonstração', 'Heading2')
 if args.video_url:
     paragraph(f'<link href="{escape(args.video_url)}" color="#245c8a">{escape(args.video_url)}</link>')
 else:
     paragraph('Link do vídeo: pendente. A demonstração deve apresentar deploy, pipeline, APIs, notificações e escala automática em até 15 minutos.')
 paragraph('Solução', 'Heading2')
+paragraph('A fase 2 evolui a base da primeira entrega: cadastros de clientes e veículos, catálogo, estoque, orçamento, ciclo da ordem de serviço, acompanhamento público e indicadores. A modelagem DDD e os documentos da primeira fase permanecem disponíveis no repositório.')
 paragraph('Monólito com arquitetura hexagonal, domínio independente de JPA e portas para persistência, cadastros, tokens e notificações. A fila operacional prioriza status e antiguidade. A aprovação externa identifica eventos e versões do orçamento para impedir reprocessamento e decisões desatualizadas.')
 paragraph('As mudanças de status geram mensagens persistidas na mesma transação da ordem. Um worker envia os avisos por SMTP com novas tentativas. O ambiente local usa Mailpit para visualizar as mensagens sem entregá-las a clientes reais.')
 story.append(PageBreak())

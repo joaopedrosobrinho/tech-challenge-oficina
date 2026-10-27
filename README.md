@@ -1,6 +1,39 @@
-# Tech Challenge Oficina Mecânica - Fase 2
+# Tech Challenge Oficina Mecânica
 
 API REST para gerenciar clientes, veículos, serviços, peças e o ciclo de vida de ordens de serviço. A segunda fase acrescenta arquitetura hexagonal, aprovação externa de orçamento, notificações de status e infraestrutura reproduzível com Kubernetes, Terraform e GitHub Actions.
+
+## Funcionalidades das fases 1 e 2
+
+### Base da fase 1
+
+- Cadastro e manutenção de clientes e veículos.
+- Catálogo de serviços e peças, com ativação e desativação.
+- Estoque com entrada, saída, baixa na aprovação e devolução no cancelamento quando aplicável.
+- Abertura de OS, composição e recálculo de orçamento.
+- Aprovação e recusa administrativa de orçamento.
+- Controle das transições de status, finalização, entrega e cancelamento.
+- Consultas por número, cliente, veículo e status; acompanhamento público por número da OS e placa.
+- Indicadores de duração e tempo médio de execução.
+- Autenticação administrativa com JWT, validação de dados e respostas de erro padronizadas.
+- Swagger/OpenAPI, testes, cobertura e execução com Docker Compose.
+
+```text
+RECEBIDA -> EM_DIAGNOSTICO -> AGUARDANDO_APROVACAO
+         -> EM_EXECUCAO -> FINALIZADA -> ENTREGUE
+```
+
+A recusa retorna a OS ao diagnóstico. O cancelamento segue as regras do domínio e pode devolver as peças ao estoque.
+
+### Evolução na fase 2
+
+- Portas e adaptadores, domínio independente de JPA e testes de arquitetura.
+- Fila operacional ordenada por prioridade e antiguidade, mantendo as consultas históricas.
+- Decisão externa de orçamento com chave própria, versão e proteção contra repetição.
+- E-mails de status persistidos em outbox, com novas tentativas de envio.
+- Migrations Flyway e validação do schema pelo Hibernate.
+- Kubernetes, Terraform, probes, HPA, teste de carga e pipeline de build, testes e deploy.
+
+A rota de listagem geral passou a representar a fila operacional. As consultas individuais e por cliente, veículo e status preservam o acesso ao histórico. As rotas administrativas de aprovação e recusa continuam disponíveis ao lado da nova integração externa.
 
 ## Arquitetura
 
@@ -20,6 +53,38 @@ O domínio não depende de Spring ou JPA. O mapeamento de persistência fica em 
 A infraestrutura usa Kind com dois nós, PostgreSQL com volume persistente, duas a quatro réplicas da aplicação, Services, ConfigMaps, Secrets, probes, HPA e Metrics Server. O banco local tem uma réplica; o ambiente serve à demonstração acadêmica e não representa uma implantação de produção com banco redundante.
 
 Os desenhos de componentes, infraestrutura e fluxo de deploy, decisões e instruções detalhadas estão em [Arquitetura e operação da fase 2](docs/FASE-2.md).
+
+### Infraestrutura provisionada
+
+```mermaid
+flowchart TB
+    TF[Terraform: infra/cluster] --> KIND[Cluster Kind: control plane + worker]
+    TDB[Terraform: infra/database] --> DB[Deployment PostgreSQL + PVC + Secret + Service]
+    KIND --- DB
+    subgraph K8S[Namespace oficina]
+        SVC[Service oficina] --> APP[Deployment oficina: 2 a 4 réplicas]
+        CFG[ConfigMap + Secret] --> APP
+        APP --> DB
+        APP --> MAIL[Mailpit: SMTP e visualização]
+        HPA[HPA: CPU 70%, memória 85%] --> APP
+    end
+    METRICS[Metrics Server] --> HPA
+    KIND --- K8S
+```
+
+### Fluxo de deploy
+
+```mermaid
+flowchart LR
+    PUSH[Push / PR / execução manual] --> TEST[Build + testes em PostgreSQL]
+    TEST --> IMAGE[Build Docker]
+    IMAGE --> TF[Terraform: cluster e banco]
+    TF --> DEPLOY[Carregar imagem + aplicar YAML]
+    DEPLOY --> SMOKE[Testar APIs]
+    SMOKE --> LOAD[Carga + HPA]
+    LOAD --> ART[Relatórios e diagnóstico]
+    ART --> CLEAN[Remover laboratório]
+```
 
 ## Tecnologias
 
@@ -61,6 +126,58 @@ java -jar target/tech-challenge-oficina-1.0.0-SNAPSHOT.jar
 ```
 
 Por padrão, a conexão aponta para PostgreSQL em `localhost:5432/oficina`. Flyway cria e evolui o schema. Para notificações, configure `NOTIFICACOES_ENABLED=true`, `SMTP_HOST`, `SMTP_PORT` e, se necessário, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_AUTH` e `SMTP_STARTTLS`.
+
+## Autenticação e configuração
+
+Use as credenciais administrativas definidas no `.env` para fazer login:
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+```
+
+```json
+{
+  "email": "usuario@exemplo.com",
+  "senha": "sua-senha"
+}
+```
+
+O exemplo é ilustrativo. Nas chamadas administrativas, envie `Authorization: Bearer SEU_TOKEN`. No Swagger, use **Authorize**. A integração externa usa `X-Integration-Key`; o acompanhamento público usa número da OS e placa.
+
+| Variável | Uso |
+|---|---|
+| `SPRING_DATASOURCE_URL` | URL JDBC; padrão local `jdbc:postgresql://localhost:5432/oficina` |
+| `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | Credenciais JDBC |
+| `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | Banco e credenciais do Compose |
+| `APP_PORT` / `POSTGRES_PORT` | Portas publicadas pelo Compose |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Administrador inicial |
+| `JWT_SECRET` | Chave Base64 com pelo menos 256 bits |
+| `JWT_EXPIRATION_MINUTES` | Validade do JWT; padrão de 60 minutos |
+| `INTEGRATION_TOKEN` | Chave exclusiva de integração com pelo menos 32 caracteres |
+| `JPA_DDL_AUTO` | `validate`; Flyway é responsável pelas migrations |
+| `JPA_SHOW_SQL` | Exibição de SQL; padrão `false` |
+| `SWAGGER_ENABLED` | Habilita Swagger e OpenAPI; padrão `true` |
+| `NOTIFICACOES_ENABLED` | Habilita o worker de e-mails |
+| `SMTP_HOST` / `SMTP_PORT` | Servidor SMTP |
+| `SMTP_USERNAME` / `SMTP_PASSWORD` | Credenciais SMTP, quando necessárias |
+| `SMTP_AUTH` / `SMTP_STARTTLS` | Autenticação e STARTTLS |
+| `SMTP_FROM` | Remetente das notificações |
+
+Não versione credenciais. Configure senhas e chave JWT próprias por ambiente. Fora do laboratório, use HTTPS e restrinja a documentação interativa conforme o ambiente. Os erros da API diferenciam validação, recurso inexistente, conflito e falhas internas, sem expor stack traces ao cliente.
+
+## Organização do código
+
+- `domain`: entidades, agregados, enums e regras de negócio.
+- `application`: casos de uso, portas, DTOs, validações e mapeadores.
+- `infrastructure`: persistência, JWT, integração, notificações e configurações.
+- `interfaces/controller`: endpoints REST e tratamento de erros.
+- `src/main/resources/META-INF/orm.xml`: mapeamento JPA.
+- `src/main/resources/db/migration`: evolução do schema.
+- `infra` e `k8s`: provisionamento e manifestos.
+- `scripts` e `.github/workflows`: operação, validação e CI/CD.
+
+`OrdemServico` é o agregado principal do fluxo. As coleções de itens usam `LinkedHashSet`. Os limites e invariantes estão descritos na documentação de domínio.
 
 ## APIs
 
@@ -117,7 +234,8 @@ O [workflow CI/CD](.github/workflows/ci-cd.yml) executa build, testes em Postgre
 
 - [Arquitetura e operação](docs/FASE-2.md).
 - [Contrato das APIs](docs/openapi.json).
-- Vídeo: pendente de gravação e publicação no YouTube ou Vimeo.
+- [Vídeo da demonstração](https://youtu.be/DhPLDU__Fzk).
+- [PDF da entrega](docs/entrega-fase-2.pdf).
 
 Para gerar o PDF, instale `reportlab` e execute:
 
@@ -128,3 +246,16 @@ python scripts/gerar-entrega.py --video-url URL_DO_VIDEO --output docs/entrega-f
 O PDF do portal precisa conter o link deste repositório, a arquitetura e o link real do vídeo. O acesso do usuário `soat-architecture` deve ser conferido antes do envio.
 
 O [modelo de domínio](docs/modelo-dominio.md) e os documentos [Linguagem Ubíqua](docs/LINGUAGEM-UBIQUA.md), [Event Storming de OS](docs/EVENT-STORMING-ORDEM-SERVICO.md) e [Event Storming de Peças](docs/EVENT-STORMING-PECAS-INSUMOS.md) registram a modelagem inicial.
+
+## Documentação da fase 1
+
+O material original foi preservado como histórico. As instruções atuais de execução e arquitetura estão neste README e em [FASE-2.md](docs/FASE-2.md).
+
+- [README da fase 1](docs/fase-1/README.md).
+- [Diagramas DDD e arquitetura inicial](docs/fase-1/DIAGRAMAS-DDD.md).
+- [Endpoints e exemplos originais](docs/fase-1/ENDPOINTS.md).
+- [Arquitetura inicial](docs/fase-1/arquitetura.md).
+- [Relatório de vulnerabilidades da fase 1](docs/fase-1/RELATORIO-VULNERABILIDADES.md).
+- [Revisão da primeira entrega](docs/fase-1/REVISAO-FINAL.md).
+
+Os relatórios históricos mantêm as datas originais para identificar a execução à qual se referem. Seus resultados não constituem um novo scan da imagem da fase 2.
