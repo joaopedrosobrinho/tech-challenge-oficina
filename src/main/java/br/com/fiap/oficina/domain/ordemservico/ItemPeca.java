@@ -1,15 +1,12 @@
 package br.com.fiap.oficina.domain.ordemservico;
 
 import br.com.fiap.oficina.domain.peca.Peca;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 
-@Entity
-@Table(name = "itens_peca")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,35 +14,14 @@ import br.com.fiap.oficina.application.exception.RegraNegocioException;
 @Builder
 public class ItemPeca {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "ordem_servico_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_item_peca_os")
-    )
     private OrdemServico ordemServico;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "peca_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_item_peca_peca")
-    )
     private Peca peca;
 
-    @Column(nullable = false)
     private Integer quantidade;
 
-    @Column(
-            name = "valor_unitario",
-            nullable = false,
-            precision = 12,
-            scale = 2
-    )
     private BigDecimal valorUnitario;
 
     public BigDecimal calcularSubtotal() {

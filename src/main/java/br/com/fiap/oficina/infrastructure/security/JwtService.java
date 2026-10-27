@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.util.Date;
 
 @Service
-public class JwtService {
+public class JwtService implements br.com.fiap.oficina.application.port.out.TokenPort {
 
     private final SecretKey chave;
     private final Duration validade;
@@ -84,6 +84,5 @@ public class JwtService {
                 .getPayload();
     }
 
-    public record TokenGerado(String valor, Instant expiraEm) {
-    }
+
 }

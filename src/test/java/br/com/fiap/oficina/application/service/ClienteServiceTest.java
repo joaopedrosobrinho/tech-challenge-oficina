@@ -2,10 +2,10 @@ package br.com.fiap.oficina.application.service;
 
 import br.com.fiap.oficina.application.dto.cliente.ClienteRequest;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.domain.cliente.Cliente;
-import br.com.fiap.oficina.infrastructure.repository.ClienteRepository;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
+import br.com.fiap.oficina.application.port.out.ClienteStore;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,10 +25,10 @@ import static org.mockito.Mockito.when;
 class ClienteServiceTest {
 
     @Mock
-    private ClienteRepository clienteRepository;
+    private ClienteStore clienteRepository;
 
     @Mock
-    private OrdemServicoRepository ordemServicoRepository;
+    private OrdemServicoStore ordemServicoRepository;
 
     private ClienteService service;
 

@@ -4,7 +4,7 @@ import br.com.fiap.oficina.application.dto.autenticacao.LoginRequest;
 import br.com.fiap.oficina.application.exception.CredenciaisInvalidasException;
 import br.com.fiap.oficina.domain.usuario.PerfilUsuario;
 import br.com.fiap.oficina.domain.usuario.Usuario;
-import br.com.fiap.oficina.infrastructure.repository.UsuarioRepository;
+import br.com.fiap.oficina.application.port.out.UsuarioStore;
 import br.com.fiap.oficina.infrastructure.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 class AutenticacaoServiceTest {
 
     @Mock
-    private UsuarioRepository usuarioRepository;
+    private UsuarioStore usuarioRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;

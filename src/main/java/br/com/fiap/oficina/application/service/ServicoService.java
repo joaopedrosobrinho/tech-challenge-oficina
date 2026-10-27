@@ -3,11 +3,11 @@ package br.com.fiap.oficina.application.service;
 import br.com.fiap.oficina.application.dto.servico.ServicoRequest;
 import br.com.fiap.oficina.application.dto.servico.ServicoResponse;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.application.mapper.ServicoMapper;
 import br.com.fiap.oficina.domain.servico.Servico;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
-import br.com.fiap.oficina.infrastructure.repository.ServicoRepository;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
+import br.com.fiap.oficina.application.port.out.ServicoStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +16,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ServicoService {
+public class ServicoService implements br.com.fiap.oficina.application.port.out.ConsultaServicoPort {
 
-    private final ServicoRepository servicoRepository;
-    private final OrdemServicoRepository ordemServicoRepository;
+    private final ServicoStore servicoRepository;
+    private final OrdemServicoStore ordemServicoRepository;
 
     @Transactional
     public ServicoResponse cadastrar(ServicoRequest request) {

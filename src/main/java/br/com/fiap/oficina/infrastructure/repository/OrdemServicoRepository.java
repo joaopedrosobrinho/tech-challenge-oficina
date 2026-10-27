@@ -63,6 +63,25 @@ public interface OrdemServicoRepository
             StatusOrdemServico status
     );
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT os FROM OrdemServico os WHERE os.id = :id")
+    Optional<OrdemServico> bloquearPorId(@Param("id") Long id);
+
+    @Query("""
+            SELECT os FROM OrdemServico os
+            WHERE os.status IN (
+                br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico.EM_EXECUCAO,
+                br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico.AGUARDANDO_APROVACAO,
+                br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico.EM_DIAGNOSTICO,
+                br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico.RECEBIDA)
+            ORDER BY CASE os.status
+                WHEN br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico.EM_EXECUCAO THEN 0
+                WHEN br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico.AGUARDANDO_APROVACAO THEN 1
+                WHEN br.com.fiap.oficina.domain.ordemservico.StatusOrdemServico.EM_DIAGNOSTICO THEN 2
+                ELSE 3 END, os.dataCriacao ASC, os.id ASC
+            """)
+    List<OrdemServico> buscarFilaOperacional();
+
     boolean existsByNumeroOs(String numeroOs);
 
     boolean existsByClienteId(Long clienteId);

@@ -3,13 +3,13 @@ package br.com.fiap.oficina.application.service;
 import br.com.fiap.oficina.application.dto.veiculo.VeiculoRequest;
 import br.com.fiap.oficina.application.dto.veiculo.VeiculoResponse;
 import br.com.fiap.oficina.application.exception.RecursoNaoEncontradoException;
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.application.mapper.VeiculoMapper;
 import br.com.fiap.oficina.application.validation.PlacaValidator;
 import br.com.fiap.oficina.domain.cliente.Cliente;
 import br.com.fiap.oficina.domain.veiculo.Veiculo;
-import br.com.fiap.oficina.infrastructure.repository.OrdemServicoRepository;
-import br.com.fiap.oficina.infrastructure.repository.VeiculoRepository;
+import br.com.fiap.oficina.application.port.out.OrdemServicoStore;
+import br.com.fiap.oficina.application.port.out.VeiculoStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +18,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class VeiculoService {
+public class VeiculoService implements br.com.fiap.oficina.application.port.out.ConsultaVeiculoPort {
 
-    private final VeiculoRepository veiculoRepository;
-    private final ClienteService clienteService;
-    private final OrdemServicoRepository ordemServicoRepository;
+    private final VeiculoStore veiculoRepository;
+    private final br.com.fiap.oficina.application.port.out.ConsultaClientePort clienteService;
+    private final OrdemServicoStore ordemServicoRepository;
 
     @Transactional
     public VeiculoResponse cadastrar(VeiculoRequest request) {

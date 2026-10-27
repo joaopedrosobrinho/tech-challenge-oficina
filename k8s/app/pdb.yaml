@@ -1,0 +1,7 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: {name: oficina, namespace: oficina}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: {app: oficina}

@@ -168,8 +168,8 @@ class CrudControllersIntegrationTest {
                 .thenReturn(new AprovacaoOrcamentoResponse(
                         5L, "OS-123", StatusOrdemServico.EM_EXECUCAO,
                         StatusAprovacaoOrcamento.APROVADO,
-                        new BigDecimal("150.00"), null, "Aprovado"
-                ));
+                        new BigDecimal("150.00"), null, "Aprovado",
+                1L));
 
         mockMvc.perform(post("/api/ordens-servico")
                         .contentType(MediaType.APPLICATION_JSON)

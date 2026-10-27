@@ -14,7 +14,8 @@ public record AprovacaoOrcamentoResponse(
         StatusAprovacaoOrcamento statusAprovacao,
         BigDecimal valorTotal,
         LocalDateTime dataAprovacao,
-        String observacao
+        String observacao,
+        Long versaoOrcamento
 
 ) {
 }

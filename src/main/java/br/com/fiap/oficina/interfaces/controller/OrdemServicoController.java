@@ -238,6 +238,11 @@ public class OrdemServicoController {
         );
     }
 
+    @PostMapping("/{id}/diagnostico")
+    public ResponseEntity<OrdemServicoResponse> iniciarDiagnostico(@PathVariable Long id) {
+        return ResponseEntity.ok(ordemServicoService.iniciarDiagnostico(id));
+    }
+
     @PostMapping("/{id}/finalizar")
     @Operation(summary = "Finalizar ordem de serviço")
     public ResponseEntity<OrdemServicoResponse> finalizar(

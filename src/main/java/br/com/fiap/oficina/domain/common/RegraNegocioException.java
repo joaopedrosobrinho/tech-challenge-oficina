@@ -1,4 +1,4 @@
-package br.com.fiap.oficina.application.exception;
+package br.com.fiap.oficina.domain.common;
 
 public class RegraNegocioException extends RuntimeException {
 

@@ -1,6 +1,6 @@
 package br.com.fiap.oficina.domain;
 
-import br.com.fiap.oficina.application.exception.RegraNegocioException;
+import br.com.fiap.oficina.domain.common.RegraNegocioException;
 import br.com.fiap.oficina.domain.cliente.Cliente;
 import br.com.fiap.oficina.domain.ordemservico.ItemPeca;
 import br.com.fiap.oficina.domain.ordemservico.ItemServico;

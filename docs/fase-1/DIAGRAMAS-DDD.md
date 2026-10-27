@@ -1,3 +1,5 @@
+> Registro da fase 1. O conteúdo abaixo descreve aquela entrega; resultados de segurança e testes não representam uma nova verificação. Para a versão atual, consulte o [README](../../README.md) e o [guia da fase 2](../FASE-2.md).
+
 # Diagramas DDD e Arquitetura
 
 Este documento apresenta uma leitura arquitetural do projeto `tech-challenge-oficina`. Os diagramas representam o código atual; elementos descritos como futuros não devem ser interpretados como já implementados.
