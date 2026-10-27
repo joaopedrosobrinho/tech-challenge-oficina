@@ -236,14 +236,6 @@ O [workflow CI/CD](.github/workflows/ci-cd.yml) executa build, testes em Postgre
 - [Contrato das APIs](docs/openapi.json).
 - [Vídeo da demonstração](https://youtu.be/DhPLDU__Fzk).
 
-Para gerar o PDF, instale `reportlab` e execute:
-
-```powershell
-python scripts/gerar-entrega.py --video-url URL_DO_VIDEO --output target/entrega-fase-2.pdf
-```
-
-O PDF do portal precisa conter o link deste repositório, a arquitetura e o link real do vídeo. O acesso do usuário `soat-architecture` deve ser conferido antes do envio.
-
 O [modelo de domínio](docs/modelo-dominio.md) e os documentos [Linguagem Ubíqua](docs/LINGUAGEM-UBIQUA.md), [Event Storming de OS](docs/EVENT-STORMING-ORDEM-SERVICO.md) e [Event Storming de Peças](docs/EVENT-STORMING-PECAS-INSUMOS.md) registram a modelagem inicial.
 
 ## Documentação da fase 1
