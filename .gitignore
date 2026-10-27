@@ -1,4 +1,5 @@
 target/
+docs/entrega-fase-2.pdf
 .env
 .env.*
 !.env.example
